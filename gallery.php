@@ -14,36 +14,36 @@
                 <h2>Gallery</h2>
 
                 <div class="gallery-container">
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
-                    <a href="#">
-                        <div></div>
-                        <h3>Title test</h3>
-                        <p>Paragraph test</p>
-                    </a>
+                    <?php
+
+                    include_once 'includes/incDBH.php';
+
+                    $sql = "SELECT * FROM gallery ORDER BY file_order DESC;";
+
+                    $stmt = mysqli_stmt_init($conn);
+
+                    if (!mysqli_stmt_prepare($stmt, $sql))
+                    {
+                        echo "SQL statement failed!";
+                    }
+                    else
+                    {
+                        mysqli_stmt_execute($stmt);
+                        $result = mysqli_stmt_get_result($stmt);
+                        
+                        while ($rows = mysqli_fetch_assoc($result)) 
+                        {
+                            echo '
+                            <a href="#">
+                                <div style="background-image: url(gallery/'.$rows['file_unique_name'].');"></div>
+                                <h3>'.$rows['file_title'].'</h3>
+                                <p>'.$rows['file_desc'].'</p>
+                            </a>';
+                        }
+                    }
+
+                        
+                    ?>
                 </div>
 
                 <div class="gallery-upload">

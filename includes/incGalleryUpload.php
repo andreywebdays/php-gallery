@@ -38,9 +38,51 @@ if (isset($_POST['submit']))
     {
         if ($file_error === 0) 
         {
-            if ($file_size > 200000) 
+            if ($file_size < 2000000) 
             {
-                # code...
+                $file_full_name = $new_file_name . "." . uniqid("", true) . "." . $file_actual_ext;
+                $file_destination = "../gallery/" . $file_full_name;
+
+                include_once 'incDBH.php';
+
+                if (empty($file_title) || empty($file_desc)) {
+                    header("Location: ../gallery.php?upload=empty");
+                    exit();
+                }
+                else
+                {
+                    $sql = "SELECT * FROM gallery;";
+                    $stmt = mysqli_stmt_init($conn);
+
+                    if (!mysqli_stmt_prepare($stmt, $sql)) 
+                    {
+                        echo "SQL statement failed!";
+                    }
+                    else
+                    {
+                        mysqli_stmt_execute($stmt);
+                        
+                        $result = mysqli_stmt_get_result($stmt);
+                        $rows = mysqli_num_rows($result);
+                        $set_file_order = $rows + 1;
+
+                        $sql = "INSERT INTO gallery (file_title, file_desc, file_unique_name, file_order) VALUE (?, ?, ?, ?);";
+
+                        if (!mysqli_stmt_prepare($stmt, $sql)) 
+                        {
+                            echo "SQL statement failed!";
+                        }
+                        else
+                        {
+                            mysqli_stmt_bind_param($stmt, "ssss", $file_title, $file_desc, $file_full_name, $set_file_order);
+                            mysqli_stmt_execute($stmt);
+
+                            move_uploaded_file($file_tmp_name, $file_destination);
+
+                            header("Location: ../gallery.php?upload=success");
+                        }
+                    }
+                }
             }
             else
             {
